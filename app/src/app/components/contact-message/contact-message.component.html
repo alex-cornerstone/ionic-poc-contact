@@ -1,0 +1,36 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Send us a message
+    </ion-title>
+    
+    <ion-buttons slot="end">
+        <ion-button (click)="close()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-item>
+      <ion-input label="Name" labelPlacement="stacked" formControlName="name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Phone" labelPlacement="stacked" formControlName="phone"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Email" labelPlacement="stacked" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea label="Message" labelPlacement="stacked" autoGrow="true" formControlName="message"></ion-textarea>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Sending...' :  'Send'}}
+    </ion-button>
+  </form>
+</ion-content>

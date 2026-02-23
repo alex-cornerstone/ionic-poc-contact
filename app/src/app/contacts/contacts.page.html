@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Contacts</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else {
+    <ion-list lines="full">
+      @for (contact of contacts; track contact.id) {
+        <ion-item>
+          <ion-avatar slot="start">
+            <div class="avatar-initials">{{ getInitials(contact.name) }}</div>
+          </ion-avatar>
+          <ion-label>{{ contact.name }}</ion-label>
+        </ion-item>
+      } @empty {
+        <ion-item>
+          <ion-label class="ion-text-center empty-label">No contacts yet</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

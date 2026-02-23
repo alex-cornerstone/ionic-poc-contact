@@ -1,0 +1,115 @@
+workflows:
+
+  # ─── iOS workflow ──────────────────────────────────────────────────────────
+  ios-workflow:
+    name: iOS TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      ios_signing:
+        distribution_type: app_store          # Use 'ad_hoc' for direct device installs
+        bundle_identifier: com.yourname.poccontact  # Must match capacitor.config.ts
+      vars:
+        XCODE_PROJECT: "app/ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+      node: latest
+
+    scripts:
+      - name: Install Node dependencies
+        script: |
+          cd app
+          npm ci
+
+      - name: Build Angular app (production)
+        script: |
+          cd app
+          npm run build -- --configuration production
+
+      - name: Capacitor sync
+        script: |
+          cd app
+          npx cap sync ios
+
+      - name: Set iOS build number to Codemagic build number
+        script: |
+          cd app/ios/App
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number \
+            "YOUR_APP_STORE_APP_ID") + 1))
+
+      - name: Build iOS .ipa
+        script: |
+          xcode-project use-profiles
+          cd app/ios/App
+          xcodebuild -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -archivePath $CM_BUILD_DIR/App.xcarchive \
+            archive
+          xcodebuild -exportArchive \
+            -archivePath $CM_BUILD_DIR/App.xcarchive \
+            -exportPath $CM_BUILD_DIR/ipa \
+            -exportOptionsPlist /Users/builder/export_options.plist
+
+    artifacts:
+      - app/ios/App/**/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration          # Set up App Store Connect API key in Codemagic UI
+        submit_to_testflight: true
+        beta_groups:
+          - "Internal Testers"    # Name of your TestFlight group
+
+  # ─── Android workflow ──────────────────────────────────────────────────────
+  android-workflow:
+    name: Android Play Store
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      android_signing:
+        - my_keystore                          # Name of keystore credential in Codemagic UI
+      vars:
+        PACKAGE_NAME: "com.yourname.poccontact"  # Must match capacitor.config.ts
+      node: latest
+
+    scripts:
+      - name: Install Node dependencies
+        script: |
+          cd app
+          npm ci
+
+      - name: Build Angular app (production)
+        script: |
+          cd app
+          npm run build -- --configuration production
+
+      - name: Capacitor sync
+        script: |
+          cd app
+          npx cap sync android
+
+      - name: Set Android version code
+        script: |
+          cd app/android
+          LATEST_BUILD_NUMBER=$(google-play get-latest-build-number \
+            --package-name "$PACKAGE_NAME" 2>/dev/null || echo "0")
+          cd app/android/app
+          sed -i "s/versionCode .*/versionCode $((LATEST_BUILD_NUMBER + 1))/" build.gradle
+
+      - name: Build Android release AAB
+        script: |
+          cd app/android
+          ./gradlew bundleRelease
+
+    artifacts:
+      - app/android/app/build/outputs/**/*.aab
+      - app/android/app/build/outputs/**/*.apk
+      - app/android/app/build/outputs/**/mapping.txt
+
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal                        # internal → alpha → beta → production

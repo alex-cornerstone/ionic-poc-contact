@@ -1,0 +1,18 @@
+@api_HostAddress = http://localhost:5292
+
+GET {{api_HostAddress}}/api/messages
+Accept: application/json
+
+###
+
+POST {{api_HostAddress}}/api/messages
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "phone": "555-1234",
+  "email": "test@example.com",
+  "message": "Hello from api.http"
+}
+
+###

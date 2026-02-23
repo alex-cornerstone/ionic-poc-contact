@@ -1,0 +1,14 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToContacts()">Contacts</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div style="display:flex; height:100%; align-items: center; justify-content: center;">
+    <ion-button size="large" (click)="openContact()">Click to connect with us</ion-button>
+  </div>
+</ion-content>
