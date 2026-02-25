@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7213'
+  apiUrl: 'https://ionic-poc-contact-production.up.railway.app/'
 };
 
 /*

@@ -18,7 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(opt => 
 {
     opt.AddDefaultPolicy(p => p.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-    opt.AddPolicy("AllowFrontend", policy => policy.WithOrigins("https://app.up.railway.app").AllowAnyHeader().AllowAnyMethod());
+    opt.AddPolicy("Production", policy => policy.WithOrigins("https://app.up.railway.app").AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddOpenApi();
@@ -31,7 +31,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseCors();
+app.UseCors("Production");
 app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok("Healthy"));
