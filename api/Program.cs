@@ -4,6 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    options.ListenAnyIP(int.Parse(port));
+});
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -12,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(opt => 
 {
     opt.AddDefaultPolicy(p => p.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+    opt.AddPolicy("AllowFrontend", policy => policy.WithOrigins("https://app.up.railway.app").AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddOpenApi();
@@ -26,6 +33,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.MapGet("/api/messages", async (AppDbContext db) =>
     await db.ContactMessages.OrderByDescending(m => m.CreatedUtc).ToListAsync());
@@ -61,4 +70,6 @@ app.MapPost("/api/messages", async (AppDbContext db, ContactMessage dto) =>
     return Results.Created($"/api/messages/{entity.Id}", new { entity.Id });
 });
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+app.Run($"http://0.0.0.0:{port}");

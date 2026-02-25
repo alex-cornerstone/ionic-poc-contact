@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.yourname.poccontact',   // CHANGE THIS to your actual bundle ID
-  appName: 'POC Contact',              // CHANGE THIS to your app display name
+  appId: 'com.alexb.poccontact', // actual bundle ID
+  appName: 'PHER Contact',       // actual app display name
   webDir: 'www'
 };
 

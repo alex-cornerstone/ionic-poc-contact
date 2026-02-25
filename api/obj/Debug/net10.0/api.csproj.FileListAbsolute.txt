@@ -147,3 +147,4 @@ C:\Users\AlexBronfman\source\repos\poc-contact\api\obj\Debug\net10.0\api.pdb
 C:\Users\AlexBronfman\source\repos\poc-contact\api\obj\Debug\net10.0\api.genruntimeconfig.cache
 C:\Users\AlexBronfman\source\repos\poc-contact\api\obj\Debug\net10.0\ref\api.dll
 C:\Users\AlexBronfman\source\repos\poc-contact\api\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\AlexBronfman\source\repos\poc-contact\api\obj\Debug\net10.0\api.sourcelink.json
